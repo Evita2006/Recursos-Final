@@ -147,4 +147,128 @@ class AdministracionIsla:
                     p["estado"] = "FINALIZADO"
 
 
+ ## ----------- INTERCAMBIO DE RECURSOS -----
+    def intercambiar_recursos(self):
+        print("\n--- INTERCAMBIO DE RECURSOS ---")
 
+        print("\nRecursos disponibles:")
+        for r, cant in self.recursos_disponibles.items():
+            print(f" - {r}: {cant}")
+
+        recurso_entregar = input("\n¿Qué recurso deseas ENTREGAR?: ").strip()
+        if recurso_entregar not in self.recursos_disponibles:
+            print("Recurso no válido.")
+            return
+
+        recurso_recibir = input("¿Qué recurso deseas RECIBIR?: ").strip()
+        if recurso_recibir not in self.recursos_disponibles:
+            print("Recurso no válido.")
+            return
+
+        if recurso_entregar == recurso_recibir:
+            print("No puedes intercambiar el mismo recurso.")
+            return
+
+        try:
+            cantidad = int(input(f"\n¿Cuánto '{recurso_entregar}' deseas entregar?: "))
+        except:
+            print("Cantidad inválida.")
+            return
+
+        if cantidad <= 0:
+            print("La cantidad debe ser mayor a 0.")
+            return
+
+        if self.recursos_disponibles[recurso_entregar] < cantidad:
+            print(f"No tienes suficiente {recurso_entregar}.")
+            return
+
+        tasa = 1
+        recibido = cantidad * tasa
+
+        self.recursos_disponibles[recurso_entregar] -= cantidad
+        self.recursos_disponibles[recurso_recibir] += recibido
+
+        print("\nIntercambio realizado:")
+        print(f"   - Entregaste: {cantidad} de {recurso_entregar}")
+        print(f"   - Recibiste: {recibido} de {recurso_recibir}")
+
+        print("\nRecursos actualizados:")
+        for r, cant in self.recursos_disponibles.items():
+            print(f"   {r}: {cant}")
+
+
+## ==========================================================
+## =====================  MENÚ INTERACTIVO ===================
+## ==========================================================
+
+def limpiar():
+    os.system("cls" if os.name == "nt" else "clear")
+
+
+def menu_interactivo():
+    isla = AdministracionIsla()
+
+    while True:
+        print("\n========= MENU PRINCIPAL =========")
+        print("1. Ver recursos disponibles")
+        print("2. Iniciar un proyecto")
+        print("3. Avanzar tiempo")
+        print("4. Ver log de avances")
+        print("5. Listar obreros disponibles")
+        print("6. Intercambiar recursos")
+        print("7. Salir")
+        print("==================================")
+
+        opcion = input("\nElige una opción: ")
+
+        if opcion == "1":
+            limpiar()
+            print("\nRECURSOS DISPONIBLES")
+            for r, cant in isla.recursos_disponibles.items():
+                print(f" - {r}: {cant}")
+        
+        elif opcion == "2":
+            limpiar()
+            print("\nPROYECTOS DISPONIBLES:")
+            for p in isla.estructuras_datos:
+                print(f" - {p}")
+
+            nombre = input("\n¿Qué proyecto deseas iniciar?: ")
+
+            print("\nObreros disponibles:")
+            for o in isla.obreros_disponibles:
+                print(" -", o)
+
+            vecinos = input("\nIngresa los obreros separados por coma: ").split(",")
+            vecinos = [v.strip() for v in vecinos]
+
+            isla.iniciar_proyecto(nombre, vecinos)
+
+        elif opcion == "3":
+            h = float(input("\n¿Cuántas horas quieres avanzar?: "))
+            isla.avanzar_tiempo(h)
+
+        elif opcion == "4":
+            limpiar()
+            isla.log_avances()
+
+        elif opcion == "5":
+            limpiar()
+            print("\nOBREROS DISPONIBLES")
+            for o, e in isla.obreros_disponibles.items():
+                print(f" - {o} (eficiencia {e})")
+
+        elif opcion == "6":
+            limpiar()
+            isla.intercambiar_recursos()
+
+        elif opcion == "7":
+            print("Saliendo del programa.")
+            break
+
+        else:
+            print("Opción inválida, intenta otra vez.")
+
+
+menu_interactivo()
