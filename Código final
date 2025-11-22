@@ -1,0 +1,57 @@
+import os
+
+## --- CLASE PRINCIPAL DEL PROYECTO ---
+
+class AdministracionIsla:
+    def _init_(self):
+        self.recursos_disponibles = {
+            "Madera_Tier1": 100,
+            "Madera_Tier2": 50,
+            "Mineral_Hierro": 40,
+            "Pepita_Oro": 15,
+            "Piedra_Brillante": 5,
+            "Baya": 5000
+        }
+
+        self.obreros_disponibles = {
+            "Novato_1": 1.0,
+            "Novato_2": 1.0,
+            "Experto_3": 1.5,
+            "Experto_4": 1.5,
+            "Experto_5": 1.5,
+            "Especialista_Canela": 2.0
+        }
+
+        self.estructuras_datos = {
+            "Puente_Mejorado": [15, 4, None, {"Madera_Tier2": 20, "Mineral_Hierro": 10, "Pepita_Oro": 5}],
+            "Tienda_Nook_N2": [40, 8, "Puente_Mejorado", {"Madera_Tier2": 30, "Pepita_Oro": 15, "Piedra_Brillante": 5}],
+            "Rampa_Acceso": [20, 6, "Puente_Mejorado", {"Madera_Tier2": 10, "Piedra_Brillante": 20}],
+            "Café_Figaro": [10, 3, None, {"Madera_Tier1": 10, "Mineral_Hierro": 5, "Pepita_Oro": 5}],
+        }
+
+        self.log_proyectos = {}
+        self.motivacion_islenha = 100
+
+
+    ## ------------------- LOG -------------------
+    def log_avances(self):
+        print("\n--- LOG DE AVANCES DEL PROYECTO ---")
+
+        if not self.log_proyectos:
+            print("No hay proyectos todavía.")
+            return
+
+        for nombre, datos in self.log_proyectos.items():
+            estado = datos["estado"]
+            if estado == "FINALIZADO":
+                print(f"[FINALIZADO] {nombre} – Coste: {datos['coste_total']} bayas")
+            elif estado == "EN CURSO":
+                print(f"[EN CURSO] {nombre}")
+                print(f"   Tiempo restante: {datos['tiempo_restante']:.2f}h")
+                print(f"   Vecinos: {', '.join(datos['vecinos'])}")
+            else:
+                print(f"[PENDIENTE] {nombre} → {datos['razon']}")
+
+        print(f"\nMotivación de la isla: {self.motivacion_islenha}%")
+
+
