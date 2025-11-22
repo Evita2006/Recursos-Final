@@ -53,5 +53,45 @@ class AdministracionIsla:
                 print(f"[PENDIENTE] {nombre} → {datos['razon']}")
 
         print(f"\nMotivación de la isla: {self.motivacion_islenha}%")
+## ----------- SUMA DE COSTES --------------
+    def sumar_coste_proyecto(self, proyectos):
+        coste_total = {r: 0 for r in self.recursos_disponibles if r != "Baya"}
+
+        print("\n--- Coste Total de Recursos ---")
+
+        for proyecto in proyectos:
+            if proyecto not in self.estructuras_datos:
+                print(f"No existe proyecto: {proyecto}")
+                continue
+            recursos = self.estructuras_datos[proyecto][3]
+            for r, cant in recursos.items():
+                coste_total[r] += cant
+
+        for r, cant in coste_total.items():
+            if cant > 0:
+                disponible = self.recursos_disponibles[r]
+                estado = "OK" if disponible >= cant else f"FALTAN {cant - disponible}"
+                print(f"{r}: {cant} ({estado})")
+
+        return coste_total
+
+## ----------- TIEMPO REAL -----------------
+    def calcular_tiempo_real(self, estructura, vecinos):
+        tiempo_base, grupo_max, _, _ = self.estructuras_datos[estructura]
+
+        eficiencias = [self.obreros_disponibles[v] for v in vecinos if v in self.obreros_disponibles]
+        eficiencias.sort(reverse=True)
+        eficiencias = eficiencias[:grupo_max]
+
+        if len(vecinos) > grupo_max:
+            print(f"Nota: Solo {grupo_max} obreros pueden trabajar aquí.")
+
+        suma = sum(eficiencias)
+        if suma == 0:
+            return None, "No hay obreros válidos"
+
+        tiempo_real = (tiempo_base / suma) * (100 / self.motivacion_islenha)
+        return tiempo_real, suma
+
 
 
