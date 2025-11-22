@@ -92,6 +92,59 @@ class AdministracionIsla:
 
         tiempo_real = (tiempo_base / suma) * (100 / self.motivacion_islenha)
         return tiempo_real, suma
+ ## ----------- INICIAR PROYECTO ------------
+    def iniciar_proyecto(self, nombre, vecinos):
+        if nombre not in self.estructuras_datos:
+            print("Proyecto inexistente.")
+            return
+
+        _, _, dependencia, recursos = self.estructuras_datos[nombre]
+
+        if dependencia:
+            if dependencia not in self.log_proyectos or self.log_proyectos[dependencia]["estado"] != "FINALIZADO":
+                print(f"No se puede iniciar, hace falta completar: {dependencia}")
+                self.log_proyectos[nombre] = {"estado": "PENDIENTE", "razon": f"Esperando {dependencia}"}
+                return
+
+        for r, cant in recursos.items():
+            if self.recursos_disponibles[r] < cant:
+                print(f"Faltan {cant - self.recursos_disponibles[r]} de {r}")
+                self.log_proyectos[nombre] = {"estado": "PENDIENTE", "razon": f"Falta {r}"}
+                return
+        
+        tiempo_real, ef = self.calcular_tiempo_real(nombre, vecinos)
+        if tiempo_real is None:
+            print("Error: no hay obreros válidos")
+            return
+
+        coste_salarial = tiempo_real * len(vecinos) * 100
+        if self.recursos_disponibles["Baya"] < coste_salarial:
+            print("No hay suficientes bayas para salarios.")
+            return
+
+        for r, cant in recursos.items():
+            self.recursos_disponibles[r] -= cant
+        self.recursos_disponibles["Baya"] -= coste_salarial
+
+        self.log_proyectos[nombre] = {
+            "estado": "EN CURSO",
+            "tiempo_restante": tiempo_real,
+            "tiempo_inicial": tiempo_real,
+            "coste_total": int(coste_salarial),
+            "vecinos": vecinos
+        }
+
+        print(f"Proyecto '{nombre}' iniciado.")
+
+
+    ## ----------- AVANZAR TIEMPO -------------
+    def avanzar_tiempo(self, horas):
+        for nombre, p in list(self.log_proyectos.items()):
+            if p["estado"] == "EN CURSO":
+                p["tiempo_restante"] -= horas
+                if p["tiempo_restante"] <= 0:
+                    print(f"Proyecto {nombre} finalizado.")
+                    p["estado"] = "FINALIZADO"
 
 
 
